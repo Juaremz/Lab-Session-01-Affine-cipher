@@ -77,7 +77,7 @@ if __name__ == "__main__":
         criptograma = cifrar_permutacion(msj_original, pi)
         print(f" Mensaje cifrado enviado : {criptograma}")
         
-        print("\n comparte pi y el criptograma con tu Pau o Yun")
+        print("\n comparte pi y el criptograma con Pau o Yun")
         
         # 4. Bob descifra el mensaje 
         pi_inversa = inversa_permutacion(pi)
