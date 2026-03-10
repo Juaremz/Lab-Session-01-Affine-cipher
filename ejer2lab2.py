@@ -1,30 +1,24 @@
 import random
 
-# --- SECCIÓN 1: FUNCIONES BASE ---
-
 def generar_permutacion(n):
-    """Punto 1.2: Genera una permutación aleatoria de tamaño n """
     pi = list(range(1, n + 1))
     random.shuffle(pi)
     return pi
 
 def inversa_permutacion(pi):
-    """Punto 1.4: Calcula la permutación inversa """
+    """Punto 1.4: Calcula la permutación inversa pi^-1 """
     n = len(pi)
     inv = [0] * n
     for i in range(n):
-        # El valor en pi[i] nos dice a qué posición va el elemento i+1
-        # En la inversa, el elemento 'valor' regresa a la posición i+1
         valor = pi[i]
         inv[valor - 1] = i + 1
     return inv
 
-# --- SECCIÓN 2: CIFRADO Y DESCIFRADO ---
+# ---  CIFRADO Y DESCIFRADO ---
 
 def cifrar_permutacion(mensaje, pi):
     """Punto 2.1: Cifra un mensaje m usando la permutación pi """
     n = len(pi)
-    # Limpieza: quitar espacios y pasar a mayúsculas
     m = mensaje.replace(" ", "").upper()
     
     # Relleno (Padding) si la longitud no es múltiplo de n 
@@ -32,58 +26,58 @@ def cifrar_permutacion(mensaje, pi):
         m += 'X'
     
     ciphertext = ""
-    # Procesar por bloques de tamaño n
     for i in range(0, len(m), n):
         bloque = m[i:i+n]
         bloque_cifrado = [''] * n
         for j in range(n):
-            # Aplicar la regla de permutación 
             bloque_cifrado[pi[j]-1] = bloque[j]
         ciphertext += "".join(bloque_cifrado)
     
     return ciphertext
 
-def descifrar_permutacion(c, pi):
-    """Punto 2.2: Descifra un criptograma c usando la permutación original """
-    pi_inv = inversa_permutacion(pi)
-    
-    n = len(pi_inv)
-    plaintext = ""
-    # El proceso es idéntico al cifrado, pero usando la permutación inversa
-    for i in range(0, len(c), n):
-        bloque = c[i:i+n]
-        bloque_descifrado = [''] * n
-        for j in range(n):
-            bloque_descifrado[pi_inv[j]-1] = bloque[j]
-        plaintext += "".join(bloque_descifrado)
-    
-    return plaintext
+# --- MENÚ PRINCIPAL ---
 
-# --- BLOQUE DE EJECUCIÓN 
+def menu():
+    print("\n--- LABORATORIO 03: PERMUTATION CIPHER ---")
+    
+    while True:
+        print("\n¿Qué deseas hacer?")
+        print("1. Generar Permutación y Cifrar (Alice)")
+        print("2. Descifrar un mensaje (Bob)")
+        print("3. Salir")
+        
+        opcion = input("Selecciona una opción: ")
+        
+        if opcion == "1":
+            n = int(input("Introduce el tamaño n (>=3): "))
+            pi = generar_permutacion(n)
+            print(f"Permutación pi generada: {pi}")
+            
+            msj = input("Introduce el mensaje claro: ")
+            cifrado = cifrar_permutacion(msj, pi)
+            print(f"Criptograma para enviar a Bob: {cifrado}")
+            
+        elif opcion == "2":
+            # Aquí Bob pide los datos que Alice le compartió 
+            cripto = input("Introduce el criptograma recibido: ")
+            pi_str = input("Introduce la permutación pi (separada por comas, ej: 3,1,4,2): ")
+            
+            # Convertir el string de la permutación a una lista de enteros
+            pi_recibida = [int(x.strip()) for x in pi_str.split(",")]
+            
+            # Bob calcula la inversa para poder descifrar 
+            pi_inv = inversa_permutacion(pi_recibida)
+            print(f"Inversa calculada (pi^-1): {pi_inv}")
+            
+            # Descifrar usando la inversa
+            descifrado = cifrar_permutacion(cripto, pi_inv)
+            print(f"Mensaje original recuperado: {descifrado}")
+            
+        elif opcion == "3":
+            print("Saliendo...")
+            break
+        else:
+            print("Opción no válida.")
 
 if __name__ == "__main__":
-    print("--- Laboratorio 03: Permutation Cipher (ESCOM) ---")
-    
-    # 1. Configuración inicial 
-    n = int(input("Introduce el tamaño de la permutación n (>=3): "))
-    
-    if n >= 3:
-        # 2. Alice genera la permutación 
-        pi = generar_permutacion(n)
-        print(f"\n Permutación generada (pi): {pi}")
-        
-        # 3. Alice cifra un mensaje 
-        msj_original = input(" Introduce el mensaje a cifrar: ")
-        criptograma = cifrar_permutacion(msj_original, pi)
-        print(f" Mensaje cifrado enviado : {criptograma}")
-        
-        print("\n comparte pi y el criptograma con Pau o Yun")
-        
-        # 4. Bob descifra el mensaje 
-        pi_inversa = inversa_permutacion(pi)
-        print(f" Calculando inversa (pi^-1): {pi_inversa}")
-        
-        msj_recuperado = descifrar_permutacion(criptograma, pi)
-        print(f" Mensaje recuperado: {msj_recuperado}")
-    else:
-        print("El tamaño n debe ser mayor o igual a 3.")
+    menu()
